@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blessed Pier Giorgio Frassati</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: "Times New Roman", Times, serif;
+            background: url(https://assets.onecompiler.app/43cje5v35/43cjpn2mt/Untitled%20design.jpg) no-repeat center center/cover;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .rock-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .rock {
+            width: 200px;
+            height: 200px;
+            background-image: url('https://assets.onecompiler.app/43cje5v35/43cjpn2mt/Adobe%20Express%20-%20file%20(3).png');
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: scale(1);
+            outline: none; /* Disable the blue selection outline */
+        }
+        .rock:hover {
+            transform: translateY(-15px) scale(1.1);
+            filter: grayscale(30%);
+        }
+        .rock:active {
+            transform: scale(0.9);
+        }
+        .fact-container {
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: popup 0.5s ease-in-out;
+        }
+        .fact-container p {
+            font-size: 2em;
+            text-align: center;
+            max-width: 80%;
+        }
+        .okay-button, .mine-again-button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 2em;
+            cursor: pointer;
+            background: #fff;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-family: "Times New Roman", Times, serif;
+        }
+        .okay-button {
+            display: none;
+        }
+        .mine-again-button {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes popup {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: "Times New Roman", Times, serif;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Blessed Pier Giorgio Frassati</h1>
+    <p>Click a rock three times to reveal a fact about Frassati!</p>
+    <div class="rock-container">
+        <div class="rock" onclick="breakRock(0)"></div>
+        <div class="rock" onclick="breakRock(1)"></div>
+        <div class="rock" onclick="breakRock(2)"></div>
+    </div>
+    <div id="fact-container" class="fact-container" style="display: none;">
+        <p id="fact"></p>
+        <button class="okay-button" onclick="closeFact()">Okay</button>
+    </div>
+    <button id="mine-again" class="mine-again-button" onclick="restartGame()">Mine Again</button>
+    
+    <audio id="rock-sound" src="https://assets.onecompiler.app/43cje5v35/43cjpn2mt/rock_break.mp3"></audio>
+    
+    <script>
+        let clickCounts = [0, 0, 0];
+        let facts = [
+            "Pier Giorgio Frassati, born on April 6, 1901, in Turin, Italy, was a remarkable young Catholic whose brief life left a unique mark on those around him. The son of a prominent newspaper owner and politician, Frassati developed a deep faith and compassion for the poor that often contradicted his family's secular outlook.",
+            "Frassati balanced his studies in mining engineering with an active spiritual life, daily Mass attendance, and extensive charitable work through the St. Vincent de Paul Society. Frassati was known for his joyful demeanor, love of outdoor activities, and ability to inspire faith in his peers.",
+            "Frassati's political activism against the rising Fascist movement in Italy and his commitment to Catholic social teaching made him a voice for justice in his time. Tragically, Frassati contracted polio, likely from his work with the sick and poor, and died on July 4, 1925, at the age of 24."
+        ];
+        let rocks = document.querySelectorAll('.rock');
+        let rockSound = document.getElementById('rock-sound');
+        let revealedFacts = 0;
+        
+        function breakRock(index) {
+            clickCounts[index]++;
+            rockSound.play();
+            if (clickCounts[index] === 3) {
+                // Apply the shake animation after breaking the rock
+                rocks[index].style.animation = "shake 0.5s ease-in-out";
+                setTimeout(() => rocks[index].style.animation = "", 500);  // Reset the animation after it plays
+
+                // Smoothly hide the rock after breaking
+                rocks[index].style.opacity = "0";
+                rocks[index].style.transform = "scale(0.8)";
+                setTimeout(() => rocks[index].style.display = "none", 300);
+
+                document.getElementById('fact').innerText = facts[index];
+                document.getElementById('fact-container').style.display = "flex";
+                document.querySelector('.okay-button').style.display = "block";
+                revealedFacts++;
+            }
+        }
+        
+        function closeFact() {
+            document.getElementById('fact-container').style.display = "none";
+            document.querySelector('.okay-button').style.display = "none";
+            if (revealedFacts === 3) {
+                setTimeout(() => document.getElementById('mine-again').style.display = "block", 500);
+            }
+        }
+        
+        function restartGame() {
+            clickCounts = [0, 0, 0];
+            revealedFacts = 0;
+            // Reset the rocks and make the changes subtle
+            rocks.forEach((rock) => {
+                rock.style.display = "inline-block";
+                rock.style.opacity = "1";
+                rock.style.transform = "scale(1)";
+                rock.style.animation = "none";
+            });
+            document.getElementById('mine-again').style.display = "none";
+        }
+    </script>
+
+    <div class="watermark">11HUMSS-09</div>
+</body>
+</html>
